@@ -120,7 +120,7 @@ const AVApiFp = function (configuration?: Configuration) {
 
 export const AVApiFactory = (configuration?: Configuration, basePath?: string) => {
   return {
-    getTimeSeriesDaily(symbol: string, outputsize: string = 'compact', datatype?: string, options?: any) {
+    getTimeSeriesDaily(symbol: string, outputsize: string = 'full', datatype?: string, options?: any) {
       return AVApiFp(configuration).getTimeSeriesDaily(symbol, outputsize, datatype, options)(basePath)
     },
     searchSymbols(keywords: string, datatype?: string, options?: any) {

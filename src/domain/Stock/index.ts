@@ -89,11 +89,11 @@ export const generateDataTracesDomain = (item: TimeSeriesDaily): DataTraceItemCu
 }
 
 export const layout: any= {
-  // title: 'Shoreline Stock Market',
+  title: 'Shoreline Stock Market Chart',
   xaxis: {
-    autorange: true,
+    // autorange: true,
     range: ['2010-02-17', Date.now()],
-    color: '#81DDCC',
+    color: 'black',
     rangeselector: {buttons: [
         {
           count: 1,
@@ -117,8 +117,16 @@ export const layout: any= {
     range: [86.8700008333, 138.870004167],
     type: 'linear'
   },
-  width: 1400,
+  // grid: {
+  //   columns: 6,
+  //   pattern: 'coupled',
+  //   // rows: 12
+  // },
+  // width: '1400',
+  // minWidth: '800',
   height: 500,
   // updatemenus: updatemenus,
-  showlegend: false
+  showlegend: false,
+  // title: 'Shoreline'
+  // paper_bgcolor: '#e4d1ba'
 };
