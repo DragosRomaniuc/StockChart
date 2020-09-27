@@ -188,7 +188,6 @@ export const Stocks = () => {
             renderInput={(params) => (
               <form onSubmit={handleTextInput}>
                 <TextField
-                  error={!!countDown}
                   {...params}
                   id="filled-basic"
                   label="Search Company"

@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 
 import App from 'components/app/App';
 
-
 window.renderShoreline = (containerId: string) => {
   const elem = document.getElementById(containerId);
 
