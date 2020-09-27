@@ -54,6 +54,13 @@ export interface DataTraceItemCustom extends DataTraceItem {
   
 }
 
+export const facebookBestMatch: BestMatches = {
+  '1. symbol': "FB",
+  '2. name': "Facebook Inc.",
+  '3. type': "Equity",
+  '4. region': "United States",
+  '8. currency': "USD",
+};
 
 export const extractXY = (data: any): DataTraceItem => {
   const x: string[] = Object.keys(data);
@@ -92,8 +99,8 @@ export const layout: any= {
   title: 'Shoreline Stock Market Chart',
   xaxis: {
     // autorange: true,
+    color:'#7f7f7f',
     range: ['2010-02-17', Date.now()],
-    color: 'black',
     rangeselector: {buttons: [
         {
           count: 1,
@@ -113,20 +120,11 @@ export const layout: any= {
     type: 'date'
   },
   yaxis: {
+    color:'#7f7f7f',
     autorange: true,
     range: [86.8700008333, 138.870004167],
     type: 'linear'
   },
-  // grid: {
-  //   columns: 6,
-  //   pattern: 'coupled',
-  //   // rows: 12
-  // },
-  // width: '1400',
-  // minWidth: '800',
   height: 500,
-  // updatemenus: updatemenus,
   showlegend: false,
-  // title: 'Shoreline'
-  // paper_bgcolor: '#e4d1ba'
 };
