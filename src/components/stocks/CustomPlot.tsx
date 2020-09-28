@@ -66,7 +66,7 @@ export const CustomPlot = ({
         data={dataTraces || []}
         layout={layout}
         config={{
-          responsive: true,
+          // responsive: true,
           autosizable: true,
         }}
         onRelayout={(event: any) => handleRelayout(event)}
