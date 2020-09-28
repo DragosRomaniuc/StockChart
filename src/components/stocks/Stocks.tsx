@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import Plot from 'react-plotly.js';
 import { useCookies } from 'react-cookie';
-import moment, { MomentInput } from 'moment';
+import moment from 'moment';
+import { Alert } from '@material-ui/lab';
 
-import { Chip, Grid, IconButton, LinearProgress, makeStyles, TextField } from '@material-ui/core';
+import { Chip, Container, Grid, IconButton, makeStyles, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CloseIcon from '@material-ui/icons/Close';
 import ApiFactory from '../../services/alphavintage-api';
-import { BestMatches, BestMatchesEnum, DataTraceItemCustom, facebookBestMatch, generateDataTracesDomain, layout, TimeSeriesDaily } from 'domain/Stock'
+import { BestMatches, BestMatchesEnum, DataTraceItemCustom, facebookBestMatch, generateDataTracesDomain, TimeSeriesDaily } from 'domain/Stock'
 import { BasicError } from 'domain/Global'
 import { useGlobalContext } from 'context/global/GlobalContext';
 import { addCompaniesAction } from 'context/global/stocks/stocks-actions';
-import logo from '../../assets/trading.jpg'
-import { Alert } from '@material-ui/lab';
+import logo from '../../assets/stock-market_1.png'
+import { CustomPlot } from './CustomPlot';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,8 +35,8 @@ const useStyles = makeStyles((theme) => ({
   },
   img: {
     flex: 1,
-    padding: 40,
-    maxWidth: '35%'
+    padding: 5,
+    maxWidth: '25%'
   },
   linearProgress: {
     width: '70%'
@@ -47,10 +47,10 @@ export const Stocks = () => {
   const classes = useStyles();
   const fixedOptions: BestMatches[] = [facebookBestMatch];
 
-  const [cookies, setCookie, removeCookie] = useCookies(['shoreline']);
+  const [cookies, setCookie, removeCookie] = useCookies(['shoreline']); 
 
   const [countDown, setCountDown] = useState<string>('');
-  const [dataTraces, setDataTraces] = useState<DataTraceItemCustom[]>();
+  const [dataTraces, setDataTraces] = useState<DataTraceItemCustom[]>([]);
   const [searchedCompanies, setSearchedCompany] = useState<BestMatches[]>([]);
   const [errors, setErrors] = useState<BasicError[]>()
   const [loading, setLoading] = useState<boolean>(false)
@@ -61,35 +61,6 @@ export const Stocks = () => {
     },
     dispatch
   } = useGlobalContext();
-
-  useEffect(() => {
-    generateDataTraces();
-  }, [companies]);
-
-  useEffect(() => {
-    if (cookies.shoreline) {
-      let countDownDate = moment(cookies.shoreline);
-
-      let x = setInterval(function () {
-        let diff = countDownDate.diff(moment());
-
-        if (diff <= 0) {
-          clearInterval(x);
-          setCountDown('')
-        } else
-          setCountDown(moment.utc(diff).format("HH:mm:ss"))
-
-      }, 1000);
-    } else {
-      setErrors([])
-    }
-  }, [cookies])
-
-  useEffect(() => {
-    if (countDown === '') {
-      removeCookie('shoreline');
-    };
-  }, [countDown])
 
   const generateDataTraces = async () => {
     try {
@@ -132,6 +103,34 @@ export const Stocks = () => {
     }
   }
 
+  useEffect(() => {
+    generateDataTraces();
+  }, [companies]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (cookies.shoreline) {
+      let countDownDate = moment(cookies.shoreline);
+
+      let x = setInterval(function () {
+        let diff = countDownDate.diff(moment());
+
+        if (diff <= 0) {
+          clearInterval(x);
+          setCountDown('')
+        } else
+          setCountDown(moment.utc(diff).format("HH:mm:ss"))
+
+      }, 1000);
+    } else {
+      setErrors([])
+    }
+  }, [cookies]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (countDown === '') {
+      removeCookie('shoreline');
+    };
+  }, [countDown]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleTextInput = async (ev: any) => {
     try {
@@ -161,20 +160,20 @@ export const Stocks = () => {
 
   return (
     <div>
-      <Grid container direction="column" justify="center" >
+      <Container >
         <Grid
           container
-          justify="center"
+          justify="space-around"
           item sm
           xs={12}
           alignContent="center"
           alignItems="center"
         >
-          <img src={logo} className={classes.img} />
+          <img src={logo} className={classes.img} alt="logo" />
           <Autocomplete
             multiple
             id="fixed-tags-demo"
-            value={companies}
+            value={companies || []}
             disabled={!!cookies.shoreline}
             onChange={(event, newValue) => handleAutoComplete(newValue)}
             options={searchedCompanies}
@@ -219,7 +218,7 @@ export const Stocks = () => {
                     color="inherit"
                     size="small"
                     onClick={() => {
-                      setErrors([...errors.filter((err: BasicError) => item.message !== item.message)]);
+                      setErrors([...errors.filter((err: BasicError) => item.message !== err.message)]);
                     }}
                   >
                     <CloseIcon fontSize="inherit" />
@@ -233,25 +232,11 @@ export const Stocks = () => {
           }
         </Grid>
 
-        {loading ? <Grid container justify="center" className={classes.container}>
-          <LinearProgress className={classes.linearProgress} />
-          <LinearProgress color="primary" className={classes.linearProgress} /> </Grid> :
-          <Grid item><Plot
-            data={dataTraces || []}
-            layout={layout}
-            config={{
-              responsive: true,
-              // fillFrame: true,
-              // frameMargins: 100,
-              autosizable: true,
-              // editable: false,
-              showSources: true
-            }}
-            style={{ paddingBottom: 100, marginBottom: 50 }}
+          <CustomPlot 
+            loading={loading}
+            dataTraces={dataTraces || []}
           />
-          </Grid>
-        }
-      </Grid>
+      </Container>
     </div>
   );
 }

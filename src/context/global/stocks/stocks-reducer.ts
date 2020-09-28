@@ -23,9 +23,9 @@ export const stocksReducer = (
 ): StocksState => {
   switch (action.type) {
     case StocksActionType.ADD_COMPANY:
-      let index = state.companies.findIndex(el => el[BestMatchesEnum.symbol] == action.payload.company[BestMatchesEnum.symbol]);
+      let index = state.companies.findIndex(el => el[BestMatchesEnum.symbol] === action.payload.company[BestMatchesEnum.symbol]);
 
-      if (index == -1) {
+      if (index === -1) {
         return {
           companies: [...state.companies, action.payload.company]
         }

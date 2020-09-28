@@ -1,4 +1,6 @@
-export interface BestMatches {
+import moment from "moment";
+
+export type BestMatches = {
   readonly '1. symbol'?: string
   readonly '2. name'?: string
   readonly '3. type'?: string
@@ -14,7 +16,7 @@ export enum BestMatchesEnum {
   currency = '8. currency?'
 }
 
-export interface MetaDataItem {
+export type MetaDataItem = {
   readonly '1. Information': string
   readonly '2. Symbol': string
   readonly '3. Last Refreshed': string
@@ -22,7 +24,7 @@ export interface MetaDataItem {
   readonly '5. Time Zone': string
 }
 
-export interface TimeSeriesItem {
+export type TimeSeriesItem = {
   readonly '1. open'?: string
   readonly '2. high'?: string
   readonly '3. low'?: string
@@ -86,6 +88,10 @@ export const generateDataTracesDomain = (item: TimeSeriesDaily): DataTraceItemCu
       color: 'rgb(55, 128, 191)',
       width: 1
     },
+    marker: {
+      color: 'pink',
+      size: 1
+    },
     textinfo: 'label+text',
     text: item["Meta Data"]["2. Symbol"],
     hoverinfo: 'x+y+text',
@@ -95,11 +101,9 @@ export const generateDataTracesDomain = (item: TimeSeriesDaily): DataTraceItemCu
 }
 
 export const layout: any = {
-  title: 'Shoreline Stock Market Chart',
   xaxis: {
-    // autorange: true,
-    color: '#7f7f7f',
-    range: ['2010-02-17', Date.now()],
+    range: ['2010-02-17', moment().format('YYYY-MM-DD')],
+    color: 'black',
     rangeselector: {
       buttons: [
         {
@@ -117,15 +121,104 @@ export const layout: any = {
         { step: 'all' }
       ]
     },
-    rangeslider: { range: ['2015-02-17', Date.now()] },
+    rangeslider: { range: ['2010-02-17', moment().format('YYYY-MM-DD')] },
     type: 'date'
   },
   yaxis: {
-    color: '#7f7f7f',
+    color: 'black',
     autorange: true,
     range: [86.8700008333, 138.870004167],
-    type: 'linear'
-  },
-  height: 500,
-  showlegend: false,
+    type: 'linear+marks'
+  }
 };
+
+const findLastAvailableDate = (dataTrace: string[], date: string) => {
+  let shouldSubtractMonth = false;
+  for (let i = 0; i <= 6; i++) {
+    let newDate = date.split('-');
+    let day = newDate[2];
+    let subtractOneDay: any = parseInt(day, 10) - i;
+    if (Math.sign(subtractOneDay) === -1) {
+      subtractOneDay = 0;
+      shouldSubtractMonth = true
+    }
+
+    if (shouldSubtractMonth) {
+      let month = newDate[1];
+      let subtractOneMonth: any = parseInt(month, 10) - 1;
+      if (Math.sign(subtractOneMonth) === -1) {
+        subtractOneMonth = 0;
+      }
+      if (subtractOneMonth < 10) {
+        subtractOneMonth = ('0' + subtractOneMonth).slice(-2)
+      };
+    }
+
+    if (subtractOneDay < 10) {
+      subtractOneDay = ('0' + subtractOneDay).slice(-2)
+    };
+
+    newDate[2] = subtractOneDay.toString();
+
+    let modifiedDate: string = newDate.join('-');
+    let dateIndex = dataTrace.indexOf(modifiedDate)
+
+    if (dateIndex !== -1) {
+      return dateIndex
+    }
+  }
+
+  return 0
+}
+
+export type AverageObject = {
+  readonly name?: string
+  readonly average: number
+}
+
+export const getAverageValue = (items: DataTraceItemCustom[], range: string[]): AverageObject[] => {
+  if (!range[0] || !range[1]) {
+    return [{
+      name: ' ',
+      average: 0
+    }]
+  }
+  const [first, second] = range.map((item) => moment(item).format('YYYY-MM-DD').split(' ')[0]);
+
+  let averages = items.map((dataTrace: DataTraceItemCustom) => {
+    let firstIndex = dataTrace.x.indexOf(first);
+
+    let secondIndex = dataTrace.x.indexOf(second);
+
+    if (secondIndex === -1) {
+      if (firstIndex === -1) {
+        secondIndex = findLastAvailableDate(dataTrace.x, second)
+      } else {
+        secondIndex = 0
+      }
+    }
+    if (firstIndex === -1) {
+
+      firstIndex = findLastAvailableDate(dataTrace.x, first)
+      if (firstIndex === 0) firstIndex = dataTrace.x.length - 1
+    }
+
+    let newYArray = dataTrace.y.slice(secondIndex, firstIndex);
+
+    if (newYArray) {
+      let sum = newYArray.reduce((acc, curr) => { return acc + parseInt(curr, 10) }, 0);
+      let average = sum / (firstIndex - secondIndex);
+      return {
+        name: dataTrace.name,
+        average
+      }
+    }
+
+    return {
+      name: '',
+      average: 0
+    }
+  });
+
+  return averages
+}

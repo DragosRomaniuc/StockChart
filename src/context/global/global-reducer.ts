@@ -1,4 +1,3 @@
-import { GenericObject } from 'utils/GenericObject';
 import { AnyAction } from '../AnyAction';
 import { stocksInitialState, stocksReducer, StocksState } from './stocks/stocks-reducer';
 

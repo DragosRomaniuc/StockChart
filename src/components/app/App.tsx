@@ -1,7 +1,6 @@
 import React from 'react';
 import './App.css';
 import { CookiesProvider } from 'react-cookie';
-import { ErrorBoundary } from './ErrorBoundary';
 import { BrowserRouter } from 'react-router-dom';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 
@@ -15,7 +14,6 @@ const App = (props: any) => {
   return (
     <div className="App">
       <CookiesProvider>
-      <ErrorBoundary>
         <MuiThemeProvider theme={theme}>
           <BrowserRouter >
             <GlobalContextProvider>
@@ -23,7 +21,6 @@ const App = (props: any) => {
             </GlobalContextProvider>
           </BrowserRouter>
         </MuiThemeProvider>
-      </ErrorBoundary>
       </CookiesProvider>
     </div>
   );

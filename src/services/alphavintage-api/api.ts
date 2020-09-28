@@ -1,7 +1,9 @@
-import * as url from 'url';
 import { baseRequestService } from '../baseRequestService';
 
-import { Configuration } from "./configuration";
+export type Configuration = {
+  readonly basePath: string
+  readonly apiKey: string
+}
 
 const BASE_PATH = "https://www.alphavantage.co/query?".replace(/\/+$/, "");
 
@@ -17,7 +19,7 @@ export class RequiredError extends Error {
   }
 }
 
-export const AVApiFetchParamCreator = function (configuration?: Configuration) {
+export const AVApiFetchParamCreator = function (configuration: Configuration) {
   return {
     getTimeSeriesDaily(symbol: string, outputsize?: string, datatype?: string, options: any = {}): FetchArgs {
       if (!symbol) {
@@ -96,7 +98,7 @@ export const AVApiFetchParamCreator = function (configuration?: Configuration) {
 const AVApiFp = function (configuration?: Configuration) {
   return {
     getTimeSeriesDaily(symbol: string, outputsize?: string, datatype?: string, options?: any): (basePath?: string) => Promise<any> {
-      const localVarFetchArgs = AVApiFetchParamCreator(configuration).getTimeSeriesDaily(symbol, outputsize, datatype, options);
+      const localVarFetchArgs = AVApiFetchParamCreator(configuration!).getTimeSeriesDaily(symbol, outputsize, datatype, options);
 
       return (basePath: string = BASE_PATH) => {
         return baseRequestService(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
@@ -106,7 +108,7 @@ const AVApiFp = function (configuration?: Configuration) {
       };
     },
     searchSymbols(keywords: string, datatype?: string, options?: any): (basePath?: string) => Promise<any> {
-      const localVarFetchArgs = AVApiFetchParamCreator(configuration).searchSymbols(keywords, datatype, options);
+      const localVarFetchArgs = AVApiFetchParamCreator(configuration!).searchSymbols(keywords, datatype, options);
 
       return (basePath: string = BASE_PATH) => {
         return baseRequestService(basePath + localVarFetchArgs.url, localVarFetchArgs.options)

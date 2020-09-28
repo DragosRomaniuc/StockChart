@@ -1,5 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import qs from 'qs';
+import axios, { AxiosRequestConfig } from 'axios';
 
 const parseParams = (params: any) => {
   const keys = Object.keys(params);
@@ -39,10 +38,7 @@ const baseRequestService = async (
         }
       }
 
-      console.log('endpoint:', endpoint, 'options:', options);
-
       return axios(endpoint, options).then(response=> {
-        console.log(response);
         return response.data
       })
     } catch (err) {
