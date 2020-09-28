@@ -47,7 +47,7 @@ export const Stocks = () => {
   const classes = useStyles();
   const fixedOptions: BestMatches[] = [facebookBestMatch];
 
-  const [cookies, setCookie, removeCookie] = useCookies(['shoreline']); 
+  const [cookies, setCookie, removeCookie] = useCookies(['shoreline']);
 
   const [countDown, setCountDown] = useState<string>('');
   const [dataTraces, setDataTraces] = useState<DataTraceItemCustom[]>([]);
@@ -64,15 +64,16 @@ export const Stocks = () => {
 
   const generateDataTraces = async () => {
     try {
-        setLoading(true)
-        let queryPromises: Promise<TimeSeriesDaily>[] = companies.map((item: BestMatches) => ApiFactory.getTimeSeriesDaily(item[BestMatchesEnum.symbol]!))
-        let queryResponses: TimeSeriesDaily[] = await Promise.all(queryPromises);
-        let withoutError = queryResponses.filter((item: TimeSeriesDaily) => !item.Note);
+      if (cookies.shoreline) return;
+      setLoading(true)
+      let queryPromises: Promise<TimeSeriesDaily>[] = companies.map((item: BestMatches) => ApiFactory.getTimeSeriesDaily(item[BestMatchesEnum.symbol]!))
+      let queryResponses: TimeSeriesDaily[] = await Promise.all(queryPromises);
+      let withoutError = queryResponses.filter((item: TimeSeriesDaily) => !item.Note);
 
-        if (queryResponses.length !== withoutError.length) {
-          setErrors([{
-            message: 'Thank you for using Shoreline! Our standard API call frequency is 5 calls per minute and 500 calls per day.'
-          }])
+      if (queryResponses.length !== withoutError.length) {
+        setErrors([{
+          message: 'Thank you for using Shoreline! Our standard API call frequency is 5 calls per minute and 500 calls per day.'
+        }])
 
         if (!cookies.shoreline) {
           setCookie('shoreline', moment().add(1, 'minutes'), {
@@ -115,21 +116,20 @@ export const Stocks = () => {
         let diff = countDownDate.diff(moment());
 
         if (diff <= 0) {
+          setCountDown(' ')
           clearInterval(x);
-          setCountDown('')
         } else
           setCountDown(moment.utc(diff).format("HH:mm:ss"))
 
       }, 1000);
-    } else {
-      setErrors([])
     }
   }, [cookies]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (countDown === '') {
+    if (countDown === ' ') {
       removeCookie('shoreline');
-    };
+      setErrors([])
+    }
   }, [countDown]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleTextInput = async (ev: any) => {
@@ -232,10 +232,10 @@ export const Stocks = () => {
           }
         </Grid>
 
-          <CustomPlot 
-            loading={loading}
-            dataTraces={dataTraces || []}
-          />
+        <CustomPlot
+          loading={loading}
+          dataTraces={dataTraces || []}
+        />
       </Container>
     </div>
   );
