@@ -76,11 +76,9 @@ export const Stocks = () => {
         }])
 
         if (!cookies.shoreline) {
-          if (countDown === ' ') {
             setCookie('shoreline', moment().add(1, 'minutes'), {
               expires: moment().add(1, 'minutes').toDate()
             });
-          }
         }
 
         let companiesWithoutApiError = companies.filter((company: BestMatches) =>
@@ -114,24 +112,19 @@ export const Stocks = () => {
       let countDownDate = moment(cookies.shoreline);
 
       let x = setInterval(function () {
-        let diff = countDownDate.diff(moment(), 'seconds');
-
+        let diff = countDownDate.diff(moment());
+        console.log('diff', diff)
         if (diff <= 0) {
           setCountDown(' ')
+          removeCookie('shoreline');
+          setErrors([])
           clearInterval(x);
         } else {
-          setCountDown(moment.utc(diff).format("HH:mm:ss"))
+          setCountDown(moment(diff).format("mm:ss"))
         }
       }, 1000);
     }
   }, [cookies]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    if (countDown === ' ') {
-      removeCookie('shoreline');
-      setErrors([])
-    }
-  }, [countDown]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleTextInput = async (ev: any) => {
     try {
@@ -175,7 +168,7 @@ export const Stocks = () => {
             multiple
             id="fixed-tags-demo"
             value={companies || []}
-            disabled={!!cookies.shoreline}
+            disabled={countDown !== ' '}
             onChange={(event, newValue) => handleAutoComplete(newValue)}
             options={searchedCompanies}
             getOptionLabel={(option: BestMatches) => option["2. name"]!}
