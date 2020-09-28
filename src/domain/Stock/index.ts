@@ -51,7 +51,7 @@ export interface DataTraceItemCustom extends DataTraceItem {
   readonly hoverinfo?: any
   readonly title?: any
   readonly textinfo?: any
-  
+
 }
 
 export const facebookBestMatch: BestMatches = {
@@ -76,32 +76,32 @@ export const extractXY = (data: any): DataTraceItem => {
 
 export const generateDataTracesDomain = (item: TimeSeriesDaily): DataTraceItemCustom => {
   const { x, y } = extractXY(item["Time Series (Daily)"]);
-      console.log('item is', item["Meta Data"])
-      const trace = {
-        x,
-        y,
-        type: "scatter",
-        mode: "lines",
-        name: item["Meta Data"]["2. Symbol"],
-        line: {
-          color: 'rgb(55, 128, 191)',
-          width: 1
-        },
-        textinfo: 'label+text',
-        text: item["Meta Data"]["2. Symbol"],
-        hoverinfo: 'x+y+text',
-      }
+  const trace = {
+    x,
+    y,
+    type: "scatter",
+    mode: "lines",
+    name: item["Meta Data"]["2. Symbol"],
+    line: {
+      color: 'rgb(55, 128, 191)',
+      width: 1
+    },
+    textinfo: 'label+text',
+    text: item["Meta Data"]["2. Symbol"],
+    hoverinfo: 'x+y+text',
+  }
 
-      return trace;
+  return trace;
 }
 
-export const layout: any= {
+export const layout: any = {
   title: 'Shoreline Stock Market Chart',
   xaxis: {
     // autorange: true,
-    color:'#7f7f7f',
+    color: '#7f7f7f',
     range: ['2010-02-17', Date.now()],
-    rangeselector: {buttons: [
+    rangeselector: {
+      buttons: [
         {
           count: 1,
           label: '1m',
@@ -114,13 +114,14 @@ export const layout: any= {
           step: 'month',
           stepmode: 'backward'
         },
-        {step: 'all'}
-      ]},
-    rangeslider: {range: ['2015-02-17', Date.now()]},
+        { step: 'all' }
+      ]
+    },
+    rangeslider: { range: ['2015-02-17', Date.now()] },
     type: 'date'
   },
   yaxis: {
-    color:'#7f7f7f',
+    color: '#7f7f7f',
     autorange: true,
     range: [86.8700008333, 138.870004167],
     type: 'linear'

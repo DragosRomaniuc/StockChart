@@ -35,7 +35,6 @@ const baseRequestService = async (
       if (options.method === 'GET') {
 
         options['paramsSerializer'] = params => {
-          console.log('parsed PAAARAMS', parseParams(params));
           return  parseParams(params)
         }
       }
