@@ -49,7 +49,7 @@ export const Stocks = () => {
 
   const [cookies, setCookie, removeCookie] = useCookies(['shoreline']);
 
-  const [countDown, setCountDown] = useState<string>('');
+  const [countDown, setCountDown] = useState<string>(' ');
   const [dataTraces, setDataTraces] = useState<DataTraceItemCustom[]>([]);
   const [searchedCompanies, setSearchedCompany] = useState<BestMatches[]>([]);
   const [errors, setErrors] = useState<BasicError[]>()
@@ -76,10 +76,11 @@ export const Stocks = () => {
         }])
 
         if (!cookies.shoreline) {
-          setCookie('shoreline', moment().add(1, 'minutes'), {
-            expires: moment().add(1, 'minutes').toDate()
-          });
-
+          if (countDown === ' ') {
+            setCookie('shoreline', moment().add(1, 'minutes'), {
+              expires: moment().add(1, 'minutes').toDate()
+            });
+          }
         }
 
         let companiesWithoutApiError = companies.filter((company: BestMatches) =>
@@ -113,14 +114,14 @@ export const Stocks = () => {
       let countDownDate = moment(cookies.shoreline);
 
       let x = setInterval(function () {
-        let diff = countDownDate.diff(moment());
+        let diff = countDownDate.diff(moment(), 'seconds');
 
         if (diff <= 0) {
           setCountDown(' ')
           clearInterval(x);
-        } else
+        } else {
           setCountDown(moment.utc(diff).format("HH:mm:ss"))
-
+        }
       }, 1000);
     }
   }, [cookies]) // eslint-disable-line react-hooks/exhaustive-deps
