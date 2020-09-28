@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.text.secondary,
   },
   container: {
-    marginTop: 30
+    marginTop: 10
   },
   image: {
     position: 'absolute',
@@ -93,16 +93,15 @@ export const Stocks = () => {
 
   const generateDataTraces = async () => {
     try {
-      if (!cookies.shoreline)
         setLoading(true)
-      let queryPromises: Promise<TimeSeriesDaily>[] = companies.map((item: BestMatches) => ApiFactory.getTimeSeriesDaily(item[BestMatchesEnum.symbol]!))
-      let queryResponses: TimeSeriesDaily[] = await Promise.all(queryPromises);
-      let withoutError = queryResponses.filter((item: TimeSeriesDaily) => !item.Note);
+        let queryPromises: Promise<TimeSeriesDaily>[] = companies.map((item: BestMatches) => ApiFactory.getTimeSeriesDaily(item[BestMatchesEnum.symbol]!))
+        let queryResponses: TimeSeriesDaily[] = await Promise.all(queryPromises);
+        let withoutError = queryResponses.filter((item: TimeSeriesDaily) => !item.Note);
 
-      if (queryResponses.length !== withoutError.length) {
-        setErrors([{
-          message: 'Thank you for using Shoreline! Our standard API call frequency is 5 calls per minute and 500 calls per day.'
-        }])
+        if (queryResponses.length !== withoutError.length) {
+          setErrors([{
+            message: 'Thank you for using Shoreline! Our standard API call frequency is 5 calls per minute and 500 calls per day.'
+          }])
 
         if (!cookies.shoreline) {
           setCookie('shoreline', moment().add(1, 'minutes'), {
@@ -119,7 +118,6 @@ export const Stocks = () => {
         setLoading(false)
 
       } else {
-
         let dataTraces: DataTraceItemCustom[] = withoutError.flatMap((item: TimeSeriesDaily) =>
           item["Time Series (Daily)"] ? generateDataTracesDomain(item) : []
         );
@@ -136,17 +134,23 @@ export const Stocks = () => {
 
 
   const handleTextInput = async (ev: any) => {
-    ev.preventDefault();
-    if (!ev.target[0].value) return;
+    try {
+      ev.preventDefault();
+      if (!ev.target[0].value) return;
 
-    let query = ev.target[0].value
-    let {
-      bestMatches
-    }: {
-      bestMatches: BestMatches[]
-    } = await ApiFactory.searchSymbols(query);
+      let query = ev.target[0].value
+      let {
+        bestMatches
+      }: {
+        bestMatches: BestMatches[]
+      } = await ApiFactory.searchSymbols(query);
 
-    setSearchedCompany(bestMatches);
+      setSearchedCompany(bestMatches);
+    } catch (err) {
+      setErrors([{
+        message: 'Something went wrong, please try again'
+      }])
+    }
   }
 
   const handleAutoComplete = (newValue: BestMatches[]) => {
@@ -229,7 +233,7 @@ export const Stocks = () => {
           }
         </Grid>
 
-        {loading ? <Grid container justify="center">
+        {loading ? <Grid container justify="center" className={classes.container}>
           <LinearProgress className={classes.linearProgress} />
           <LinearProgress color="primary" className={classes.linearProgress} /> </Grid> :
           <Grid item><Plot
