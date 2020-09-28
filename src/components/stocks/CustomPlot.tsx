@@ -67,7 +67,7 @@ export const CustomPlot = ({
         layout={layout}
         config={{
           // responsive: true,
-          autosizable: true,
+          // autosizable: true,
         }}
         onRelayout={(event: any) => handleRelayout(event)}
 
