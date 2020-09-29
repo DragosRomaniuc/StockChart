@@ -100,7 +100,7 @@ export const CustomPlot = ({
 
         {averages.map((item: AverageObject, index: number) =>
           <Typography key={index} style={{ padding: 10 }} variant="h6" component="h6" color="secondary" >
-            Average for {item.name} : {item.average.toFixed(3)}
+            Average for {item.name} : {!isNaN(item.average) ? item.average.toFixed(3) : 'Could not calculate average, please select another range'}
           </Typography>
         )}
       </Grid>
